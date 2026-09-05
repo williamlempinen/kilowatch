@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -12,13 +13,16 @@
     <artifactId>kw-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>kw-service</name>
+
     <description>kw-service</description>
     <url/>
     <licenses>
         <license/>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <name>William Lempinen</name>
+        </developer>
     </developers>
     <scm>
         <connection/>
@@ -26,9 +30,11 @@
         <tag/>
         <url/>
     </scm>
+
     <properties>
         <java.version>21</java.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -4,6 +4,10 @@
 
 asd
 
+### Java
+
+The project uses _Java_ with version of 21.0.7 _Temurin_ flavor. If you have _sdkman_ installed, you can enable the correct _Java_ version by running command `sdk env install` in the directory where `.sdkmanrc` file is located.
+
 ## KW-WEB
 
 asd
