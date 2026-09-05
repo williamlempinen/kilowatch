@@ -1,18 +1,44 @@
 services:
-  kilowatchdb:
-    image: postgres
-    restart: always
+  database:
+    container_name: kw-database
+    build:
+      context: ./database/
+      dockerfile: Dockerfile
     environment:
       POSTGRES_USER: academy
       POSTGRES_PASSWORD: academy
       POSTGRES_DB: electricity
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - 5432:5432
     volumes:
       - dbdata:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: "pg_isready -U academy -d electricity"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # service:
+  #   container_name: kw-service
+  #   build:
+  #     context: ./kw-service/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8888:8888"
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+  #
+  # web:
+  #   container_name: kw-web
+  #   build:
+  #     context: ./kw-web/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3333:3333"
+  #   depends_on:
+  #     - service
   # adminer:
   #   image: adminer
   #   restart: always
