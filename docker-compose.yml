@@ -1,0 +1,23 @@
+services:
+  kilowatchdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: academy
+      POSTGRES_PASSWORD: academy
+      POSTGRES_DB: electricity
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5432:5432
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8088:8080
+
+volumes:
+  dbdata:
