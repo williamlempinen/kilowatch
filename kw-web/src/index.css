@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-BG: #f7f9fa; /* background */
+    --color-P1: #0c7bf3; /* primary 1 */
+    --color-P2: #00b6d9; /* primary 2 */
+    --color-S1: #00c850; /* success */
+    --color-E1: #f82834; /* error */
+    --color-G1: #c8cbd0; /* gray 1 */
+    --color-G2: #f8f8f8; /* gray 2 */
+    --color-G3: #7e8490; /* gray 3 */
+    --color-W1: #ff6700; /* warning 1 */
+}
+
+@layer base {
+    html {
+        font-family: 'JetBrains Mono',
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+        @apply scroll-smooth;
+    }
+}
+
+p {
+    color: #0d1529;
+}
+
+input {
+    outline: none;
+}

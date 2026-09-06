@@ -1,18 +1,34 @@
-import { useState } from 'react'
+import Statistics from './pages/statistics'
+import Layout from './layout.tsx'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools/production'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { DURATION_15_MIN } from './constants.ts'
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: Infinity, // constant data, i.e. no new data
+            gcTime: DURATION_15_MIN, // keep old cache for 15min
+            refetchOnWindowFocus: false,
+            retry: 1
+        }
+    }
+})
 
 function App() {
-    const [count, setCount] = useState(0)
-
     return (
-        <div>
-            <main>
-                <div>
-                    <p>Hello world</p>
-                    <p>{count}</p>
-                    <button onClick={() => setCount((prev) => prev + 1)}>Increment</button>
-                </div>
-            </main>
-        </div>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Layout>
+                    <Routes>
+                        <Route path={'/'} element={<Statistics />} />
+                        <Route path="/*" element={<Navigate to={'/'} replace />} />
+                    </Routes>
+                </Layout>
+            </BrowserRouter>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     )
 }
 
