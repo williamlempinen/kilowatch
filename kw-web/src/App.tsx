@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools/production'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DURATION_15_MIN } from './constants.ts'
+import { RechartsDevtoolsContext, RechartsDevtoolsPortal } from '@recharts/devtools'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -19,15 +20,18 @@ const queryClient = new QueryClient({
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-                <Layout>
-                    <Routes>
-                        <Route path={'/'} element={<Statistics />} />
-                        <Route path="/*" element={<Navigate to={'/'} replace />} />
-                    </Routes>
-                </Layout>
-            </BrowserRouter>
-            <ReactQueryDevtools initialIsOpen={false} />
+            <RechartsDevtoolsContext>
+                <BrowserRouter>
+                    <Layout>
+                        <Routes>
+                            <Route path={'/'} element={<Statistics />} />
+                            <Route path="/*" element={<Navigate to={'/'} replace />} />
+                        </Routes>
+                    </Layout>
+                </BrowserRouter>
+                <ReactQueryDevtools initialIsOpen={false} />
+                <RechartsDevtoolsPortal />
+            </RechartsDevtoolsContext>
         </QueryClientProvider>
     )
 }

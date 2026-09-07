@@ -8,11 +8,11 @@ class ApiError extends Error {
 
 export interface ElectricityData {
     id: number
-    date: Date
+    date: string
     startTime: string
     productionAmount: number
     consumptionAmount: number
-    hourlyProduction: number
+    hourlyPrice: number
 }
 
 const getHeaders = () => ({
