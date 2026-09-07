@@ -1,5 +1,11 @@
 import { API_BASE } from './constants.ts'
 
+class ApiError extends Error {
+    constructor(message: string) {
+        super(message)
+    }
+}
+
 export interface ElectricityData {
     id: number
     date: Date
@@ -13,10 +19,20 @@ const getHeaders = () => ({
     Accept: 'application/json'
 })
 
-export async function apiFetch(path: string, signal?: AbortSignal): Promise<ElectricityData[]> {
-    const response = await fetch(`${API_BASE}/${path}`, { headers: getHeaders(), signal })
+export async function apiFetch(
+    isRange: boolean,
+    day: string,
+    signal?: AbortSignal
+): Promise<ElectricityData[]> {
+    const params = new URLSearchParams({ day })
+    const url = `${API_BASE}${isRange ? '/range' : ''}?${params.toString()}`
+
+    const response = await fetch(url, {
+        headers: getHeaders(),
+        signal
+    })
     if (!response.ok) {
-        throw new Error(`Failed to fetch data from ${path}: ${response.statusText}`)
+        throw new ApiError(`Failed to fetch data for day ${day}: ${response.statusText}`)
     }
     const json = await response.json()
     return json as ElectricityData[]

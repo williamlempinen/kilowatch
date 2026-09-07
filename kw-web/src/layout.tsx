@@ -5,9 +5,9 @@ function Layout({ children }: PropsWithChildren) {
         <div className="flex min-h-screen min-w-screen flex-col items-center bg-BG">
             <div className="h-full w-full max-w-400 flex-1">
                 <div className="mb-1 flex justify-center border-b-2 border-P1 p-1">
-                    <p>
+                    <p className="text-md">
                         the official demo site for electricity statistics! by{' '}
-                        <span className="font-bold">William Lempinen</span>
+                        <span className="text-md font-bold">William Lempinen</span>
                     </p>
                 </div>
                 <main className="p-4">{children}</main>
