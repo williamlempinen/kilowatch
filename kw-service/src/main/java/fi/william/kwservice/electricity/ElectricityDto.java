@@ -1,14 +1,15 @@
 package fi.william.kwservice.electricity;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record ElectricityDto(
     long id,
-    Date date,
-    Timestamp startTime,
-    Double productionAmount,
-    Double consumptionAmount,
-    Double hourlyPrice
+    LocalDate date,
+    LocalDateTime startTime,
+    BigDecimal productionAmount,
+    BigDecimal consumptionAmount,
+    BigDecimal hourlyPrice
 ) {
 }

@@ -25,8 +25,7 @@ public class ElectricityController {
         @RequestParam String day
     ) {
         log.info("Received request to get all electricity data on day: {}", day);
-        List<ElectricityDto> data = electricityService.getAllOnDay(day);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(electricityService.getAllOnDay(day));
     }
 
 }
