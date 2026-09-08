@@ -146,9 +146,9 @@ public class ElectricityServiceTest {
 
         assertThat(peaks).hasSize(TOP_MOST_COUNT);
         assertThat(peaks.get(0).consumptionMinusProduction()).isEqualByComparingTo("290");
-        assertThat(peaks.get(0).hour()).isEqualTo(toLocalDate("2023-10-12T01:00:00"));
+        assertThat(peaks.get(0).hour()).isEqualTo("01:00");
         assertThat(peaks.get(1).consumptionMinusProduction()).isEqualByComparingTo("190");
-        assertThat(peaks.get(1).hour()).isEqualTo(toLocalDate("2023-10-12T02:00:00"));
+        assertThat(peaks.get(1).hour()).isEqualTo("02:00");
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ElectricityServiceTest {
         List<DayDetail.PeakHour> peaks = service.calculatePeakHours(data);
 
         assertThat(peaks).hasSize(TOP_MOST_COUNT - 1); // null values should not be included into top list
-        assertThat(peaks.getFirst().hour()).isEqualTo(toLocalDate("2023-10-12T02:00:00"));
+        assertThat(peaks.getFirst().hour()).isEqualTo("02:00");
         assertThat(peaks.getFirst().consumptionMinusProduction()).isEqualByComparingTo("250");
     }
 
@@ -186,7 +186,7 @@ public class ElectricityServiceTest {
 
         assertThat(cheapest).hasSize(TOP_MOST_COUNT);
         assertThat(cheapest.get(0).price()).isEqualByComparingTo("0.10");
-        assertThat(cheapest.get(0).hour()).isEqualTo(toLocalDate("2023-10-12T01:00:00"));
+        assertThat(cheapest.get(0).hour()).isEqualTo("01:00");
         assertThat(cheapest.get(1).price()).isEqualByComparingTo("0.30");
     }
 
@@ -199,7 +199,7 @@ public class ElectricityServiceTest {
 
         List<DayDetail.HourPrice> cheapest = service.calculateCheapestHours(data);
 
-        assertThat(cheapest.getFirst().hour()).isEqualTo(toLocalDate("2023-10-12T03:00:00"));
+        assertThat(cheapest.getFirst().hour()).isEqualTo("03:00");
     }
 
     @Test

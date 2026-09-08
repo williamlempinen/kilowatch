@@ -75,7 +75,7 @@ public class ElectricityService {
         return data.stream()
             .filter(measure -> measure.consumptionAmount() != null && measure.productionAmount() != null)
             .map(measure -> new DayDetail.PeakHour(
-                measure.startTime(),
+                detailsUtil.toHourFormat(measure.startTime()),
                 measure.consumptionAmount().subtract(measure.productionAmount())
             ))
             .sorted(Comparator.comparing(DayDetail.PeakHour::consumptionMinusProduction).reversed())
@@ -91,7 +91,7 @@ public class ElectricityService {
             )
             .limit(dayDetailProperties.cheapestHoursCount())
             .map(measure -> new DayDetail.HourPrice(
-                measure.startTime(),
+                detailsUtil.toHourFormat(measure.startTime()),
                 measure.hourlyPrice())
             )
             .toList();

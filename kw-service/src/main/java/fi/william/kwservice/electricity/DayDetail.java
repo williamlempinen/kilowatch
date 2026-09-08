@@ -50,7 +50,7 @@ public record DayDetail(
      * @param hour
      * @param consumptionMinusProduction
      */
-    public record PeakHour(LocalDateTime hour, BigDecimal consumptionMinusProduction) {
+    public record PeakHour(String hour, BigDecimal consumptionMinusProduction) {
     }
 
     /**
@@ -60,7 +60,7 @@ public record DayDetail(
      * @param hour
      * @param price
      */
-    public record HourPrice(LocalDateTime hour, BigDecimal price) {
+    public record HourPrice(String hour, BigDecimal price) {
     }
 
     /**

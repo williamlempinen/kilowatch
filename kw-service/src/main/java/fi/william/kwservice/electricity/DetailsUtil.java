@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,5 +26,9 @@ public class DetailsUtil {
         }
         BigDecimal sum = sumNonNull(nonNullValues);
         return sum.divide(BigDecimal.valueOf(nonNullValues.size()), 4, RoundingMode.HALF_UP);
+    }
+
+    public String toHourFormat(LocalDateTime dateTime) {
+        return dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 }

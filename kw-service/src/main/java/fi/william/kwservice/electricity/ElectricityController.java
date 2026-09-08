@@ -18,7 +18,7 @@ public class ElectricityController {
         this.electricityService = electricityService;
     }
 
-    @GetMapping("/day")
+    @GetMapping
     public ResponseEntity<DayDetail> getElectricityDataOnDay(
         @RequestParam String day
     ) {
