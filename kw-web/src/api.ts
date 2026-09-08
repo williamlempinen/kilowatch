@@ -6,34 +6,61 @@ class ApiError extends Error {
     }
 }
 
-export interface ElectricityData {
-    id: number
-    date: string
+export interface PeakHour {
+    hour: string
+    price: number
+}
+
+export interface HourPrice {
+    hour: string
+    price: number
+}
+
+export interface Measure {
     startTime: string
-    productionAmount: number
-    consumptionAmount: number
-    hourlyPrice: number
+    consumption: number | null
+    production: number | null
+    price: number | null
+}
+
+export interface DayDetail {
+    date: string
+    totalConsumption: number | null
+    totalProduction: number | null
+    averagePrice: number | null
+    peakConsumptionVsProductionHours: PeakHour[]
+    cheapestHours: HourPrice[]
+    measures: Measure[]
 }
 
 const getHeaders = () => ({
     Accept: 'application/json'
 })
 
-export async function apiFetch(
-    isRange: boolean,
-    day: string,
+async function apiFetch<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>,
     signal?: AbortSignal
-): Promise<ElectricityData[]> {
-    const params = new URLSearchParams({ day })
-    const url = `${API_BASE}${isRange ? '/range' : ''}?${params.toString()}`
+): Promise<T> {
+    const url = new URL(`${API_BASE}${path}`, window.location.origin)
+    if (params) {
+        for (const [key, value] of Object.entries(params)) {
+            if (value !== undefined) url.searchParams.set(key, `${value}`)
+        }
+    }
 
     const response = await fetch(url, {
         headers: getHeaders(),
         signal
     })
+
     if (!response.ok) {
-        throw new ApiError(`Failed to fetch data for day ${day}: ${response.statusText}`)
+        throw new ApiError(`Request to ${path} failed: ${response.status} ${response.statusText}`)
     }
-    const json = await response.json()
-    return json as ElectricityData[]
+
+    return (await response.json()) as T
+}
+
+export async function fetchDayDetail(day: string, signal?: AbortSignal): Promise<DayDetail> {
+    return apiFetch<DayDetail>(`/electricity`, { day }, signal)
 }

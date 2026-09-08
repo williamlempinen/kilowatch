@@ -1,9 +1,17 @@
-import type { ElectricityData } from '../api.ts'
+import type { Measure } from '../api.ts'
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, Tooltip, XAxis, YAxis } from 'recharts'
 import { RechartsDevtools } from '@recharts/devtools'
 
+function ChartTooltip() {
+    return (
+        <div>
+            <p>hello</p>
+        </div>
+    )
+}
+
 export interface ElectricityChartProps {
-    data: ElectricityData[]
+    data: Measure[]
 }
 
 function ElectricityChart({ data }: ElectricityChartProps) {
@@ -36,9 +44,9 @@ function ElectricityChart({ data }: ElectricityChartProps) {
                 <XAxis dataKey="startTime" scale="band" />
                 <YAxis yAxisId="price" width="auto" />
                 <YAxis yAxisId="amount" orientation="right" width="auto" niceTicks="snap125" />
-                <Bar yAxisId="amount" dataKey="consumptionAmount" barSize={20} fill="#413ea0" />
-                <Bar dataKey="productionAmount" barSize={20} fill="#413ea0" />
-                <Line yAxisId="price" type="monotone" dataKey="hourlyPrice" stroke="#ff7300" />
+                <Bar yAxisId="amount" dataKey="consumption" barSize={20} fill="#413ea0" />
+                <Bar yAxisId="amount" dataKey="production" barSize={20} fill="#00b6d9" />
+                <Line yAxisId="price" type="monotone" dataKey="price" stroke="#ff7300" />
                 <Tooltip />
                 <Legend />
                 <RechartsDevtools />
