@@ -1,4 +1,4 @@
-import ChartDatePicker from '../components/datepicker.tsx'
+import ChartDatePicker from '../../components/datepicker.tsx'
 
 export interface FiltersProps {
     disableApply: boolean
@@ -24,14 +24,14 @@ function Filters({
             </div>
             <div className="flex flex-col gap-3 border-2 border-S1 sm:flex-row">
                 <button
-                    className="flex w-full items-center justify-center hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
+                    className="hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
                     disabled={disableApply}
                     onClick={onApplyFilters}
                 >
                     apply
                 </button>
                 <button
-                    className="flex w-full items-center justify-center hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
+                    className="hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
                     disabled={disableClear}
                     onClick={onClearFilters}
                 >

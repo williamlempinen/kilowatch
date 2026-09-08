@@ -6,9 +6,15 @@ class ApiError extends Error {
     }
 }
 
+export interface NegativePeriod {
+    start: string
+    end: string
+    duration: string
+}
+
 export interface PeakHour {
     hour: string
-    price: number
+    consumption: number
 }
 
 export interface HourPrice {
@@ -28,7 +34,8 @@ export interface DayDetail {
     totalConsumption: number | null
     totalProduction: number | null
     averagePrice: number | null
-    peakConsumptionVsProductionHours: PeakHour[]
+    negativePeriod: NegativePeriod | null
+    peakConsumptions: PeakHour[]
     cheapestHours: HourPrice[]
     measures: Measure[]
 }

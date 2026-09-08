@@ -19,6 +19,7 @@ export default defineConfig([
             globals: globals.browser
         },
         rules: {
+            '@typescript-eslint/ban-ts-comment': 'off',
             '@typescript-eslint/no-unused-vars': [
                 'warn',
                 {

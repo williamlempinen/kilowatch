@@ -10,6 +10,9 @@
     --color-G2: #f8f8f8; /* gray 2 */
     --color-G3: #7e8490; /* gray 3 */
     --color-W1: #ff6700; /* warning 1 */
+    --color-PRICE: #0c7bf3; /* PRICE */
+    --color-PROD: #c8b800; /* PRODUCTION */
+    --color-CONS: #474447; /* CONSUMPTION */
 }
 
 @layer base {
