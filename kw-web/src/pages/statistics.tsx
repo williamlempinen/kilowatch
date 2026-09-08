@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import Filters from '../features/chart/chart-filters.tsx'
 import { DEFAULT_DATE } from '../constants.ts'
-import { dateStringToHourFormat, toDayParam } from '../utils.ts'
+import { dateToHour, toDayParam } from '../utils.ts'
 import ElectricityChart from '../features/chart/chart.tsx'
 import { fetchDayDetail } from '../api.ts'
 import ElectricityDetails from '../features/chart/details.tsx'
@@ -28,12 +28,13 @@ function Statistics() {
         enabled: !!dayParam
     })
 
-    const handleNextDay = () => {
-        return
-    }
+    const shiftDay = (delta: number) => {
+        const base = dayParam ? new Date(`${dayParam}T00:00:00`) : (selectedDate ?? DEFAULT_DATE)
+        const nextDate = new Date(base)
+        nextDate.setDate(nextDate.getDate() + delta)
 
-    const handlePreviousday = () => {
-        return
+        setSelectedDate(nextDate)
+        setSearchParams({ day: toDayParam(nextDate) })
     }
 
     const handleApplyFilters = () => {
@@ -48,7 +49,7 @@ function Statistics() {
 
     const formattedMeasures = dayDetail?.measures.map((measure) => ({
         ...measure,
-        startTime: dateStringToHourFormat(measure.startTime)
+        startTime: dateToHour(measure.startTime)
     }))
 
     return (
@@ -80,13 +81,13 @@ function Statistics() {
             <div className="mt-2 flex w-full items-center justify-between">
                 <button
                     className="text-xl hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
-                    onClick={handlePreviousday}
+                    onClick={() => shiftDay(-1)}
                 >
                     previous day
                 </button>
                 <button
                     className="text-xl hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
-                    onClick={handleNextDay}
+                    onClick={() => shiftDay(1)}
                 >
                     next day
                 </button>

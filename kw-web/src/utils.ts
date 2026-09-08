@@ -1,5 +1,3 @@
-import type { Measure } from './api.ts'
-
 /**
  * Format a Date as YYYY-MM-DD
  * isDatePicker option is currently only used to format the current date for datepicker rendering
@@ -20,10 +18,6 @@ export function durationSlice(duration: string): number {
     return parseInt(duration.split('').slice(2, -1).join(''))
 }
 
-export function dateStringToHourFormat(date: string): string {
+export function dateToHour(date: string): string {
     return new Date(date).getHours().toString().padStart(2, '0') + ':00'
-}
-
-export function formatMeasuresForChart(data: Measure[]): Measure[] {
-    return []
 }
