@@ -27,7 +27,7 @@ public class ElectricityRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    public List<ElectricityDto> getAllOnDay(LocalDate date) {
+    public List<ElectricityDto> findAllByDay(LocalDate date) {
         String query = """
             select *
             from electricitydata

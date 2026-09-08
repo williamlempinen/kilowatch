@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
             HttpStatus.BAD_REQUEST);
     }
 
-    private record ApiErrorBody(
+    record ApiErrorBody(
         String timestamp,
         HttpStatus status,
         String message

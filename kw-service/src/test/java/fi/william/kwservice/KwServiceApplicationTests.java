@@ -1,6 +1,6 @@
 package fi.william.kwservice;
 
-import fi.william.kwservice.electricity.ElectricityDto;
+import fi.william.kwservice.electricity.DayDetail;
 import fi.william.kwservice.electricity.ElectricityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,11 +25,12 @@ class KwServiceApplicationTests {
     private ElectricityService service;
 
     @Test
-    void getAllOnDay_returnsTwentyFourHourlyEntries() {
-        List<ElectricityDto> result = service.getAllOnDay("2023-10-03");
+    void getElectricityDetails_returns_expected_dayDetail() {
+        DayDetail result = service.getElectricityDetailsByDay("2024-01-01");
 
-        assertThat(result).hasSize(24);
-        assertThat(result).allSatisfy(dto ->
-            assertThat(dto.date()).isEqualTo(LocalDate.of(2023, 10, 3)));
+        assertThat(result.measures()).hasSize(24);
+        assertThat(result.peakConsumptionVsProductionHours()).hasSize(3);
+        assertThat(result.cheapestHours()).hasSize(3);
+        assertThat(result.date()).isEqualTo(LocalDate.of(2024, 1, 1));
     }
 }

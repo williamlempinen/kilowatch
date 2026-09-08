@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/electricity")
 public class ElectricityController {
@@ -20,12 +18,12 @@ public class ElectricityController {
         this.electricityService = electricityService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ElectricityDto>> getAllOnDay(
+    @GetMapping("/day")
+    public ResponseEntity<DayDetail> getElectricityDataOnDay(
         @RequestParam String day
     ) {
         log.info("Received request to get all electricity data on day: {}", day);
-        return ResponseEntity.ok(electricityService.getAllOnDay(day));
+        return ResponseEntity.ok(electricityService.getElectricityDetailsByDay(day));
     }
 
 }
