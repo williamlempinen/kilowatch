@@ -11,6 +11,12 @@ import java.util.Objects;
 
 @Component
 public class DetailsUtil {
+    public BigDecimal nonNull(BigDecimal value) {
+        return value == null
+            ? BigDecimal.ZERO
+            : value;
+    }
+
     public BigDecimal sumNonNull(List<BigDecimal> values) {
         return values.stream()
             .filter(Objects::nonNull)

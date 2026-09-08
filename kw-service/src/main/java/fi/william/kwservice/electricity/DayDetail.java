@@ -1,6 +1,7 @@
 package fi.william.kwservice.electricity;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * @param totalConsumption
  * @param totalProduction
  * @param averagePrice
- * @param peakConsumptionVsProductionHours
+ * @param peakConsumptions
  * @param cheapestHours
  * @param measures
  */
@@ -21,7 +22,8 @@ public record DayDetail(
     BigDecimal totalConsumption,
     BigDecimal totalProduction,
     BigDecimal averagePrice,
-    List<PeakHour> peakConsumptionVsProductionHours,
+    NegativePeriod negativePeriod,
+    List<PeakHour> peakConsumptions,
     List<HourPrice> cheapestHours,
     List<Measure> measures
 ) {
@@ -37,6 +39,7 @@ public record DayDetail(
             null,
             null,
             null,
+            null,
             List.of(),
             List.of(),
             List.of()
@@ -44,13 +47,27 @@ public record DayDetail(
     }
 
     /**
+     * A record describing the longest consecutive time period where the price has been less than zero.
+     *
+     * @param start
+     * @param end
+     * @param duration
+     */
+    public record NegativePeriod(
+        LocalDateTime start,
+        LocalDateTime end,
+        Duration duration
+    ) {
+    }
+
+    /**
      * A record consisting a pair of timestamp and consumption minus production.
      * Use for collecting the peak hour for given day when consumption exceeded production.
      *
      * @param hour
-     * @param consumptionMinusProduction
+     * @param consumption
      */
-    public record PeakHour(String hour, BigDecimal consumptionMinusProduction) {
+    public record PeakHour(String hour, BigDecimal consumption) {
     }
 
     /**

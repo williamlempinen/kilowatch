@@ -29,7 +29,7 @@ class KwServiceApplicationTests {
         DayDetail result = service.getElectricityDetailsByDay("2024-01-01");
 
         assertThat(result.measures()).hasSize(24);
-        assertThat(result.peakConsumptionVsProductionHours()).hasSize(3);
+        assertThat(result.peakConsumptions()).hasSize(3);
         assertThat(result.cheapestHours()).hasSize(3);
         assertThat(result.date()).isEqualTo(LocalDate.of(2024, 1, 1));
     }

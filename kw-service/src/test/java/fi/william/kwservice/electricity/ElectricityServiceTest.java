@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 public class ElectricityServiceTest {
     private static final int TOP_MOST_COUNT = 2;
+    private static final BigDecimal SCALE_MULTIPLIER = new BigDecimal("1000");
     private ElectricityRepository repository;
     private ElectricityService service;
 
@@ -26,7 +28,7 @@ public class ElectricityServiceTest {
         service = new ElectricityService(
             repository,
             // note: properties configured differently than the default dev application
-            new DayDetailProperties(TOP_MOST_COUNT, TOP_MOST_COUNT),
+            new DayDetailProperties(TOP_MOST_COUNT, TOP_MOST_COUNT, SCALE_MULTIPLIER),
             new DetailsUtil()
         );
     }
@@ -89,7 +91,7 @@ public class ElectricityServiceTest {
         assertThat(result.totalConsumption()).isNull();
         assertThat(result.totalProduction()).isNull();
         assertThat(result.averagePrice()).isNull();
-        assertThat(result.peakConsumptionVsProductionHours()).isEmpty();
+        assertThat(result.peakConsumptions()).isEmpty();
         assertThat(result.cheapestHours()).isEmpty();
         assertThat(result.measures()).isEmpty();
     }
@@ -114,7 +116,7 @@ public class ElectricityServiceTest {
         DayDetail d = service.getElectricityDetailsByDay("2023-10-12");
 
         assertThat(d.date()).isEqualTo(LocalDate.of(2023, 10, 12));
-        assertThat(d.totalConsumption()).isEqualByComparingTo("600");
+        assertThat(d.totalConsumption()).isEqualByComparingTo("0.6");
         assertThat(d.totalProduction()).isEqualByComparingTo("30");
         assertThat(d.averagePrice()).isEqualByComparingTo("0.30");
     }
@@ -122,48 +124,48 @@ public class ElectricityServiceTest {
     @Test
     void getDetails_ignoresNullAmountsInTotals() {
         List<ElectricityDto> data = List.of(
-            dto("2023-10-12T00:00:00", "100", null, "0.10"),
+            dto("2023-10-12T00:00:00", "100", null, "0.10"), // 100 / 1000 = 0.1
             dto("2023-10-12T01:00:00", null, "40", "0.20")
         );
         when(repository.findAllByDay(any())).thenReturn(data);
 
         DayDetail d = service.getElectricityDetailsByDay("2023-10-12");
 
-        assertThat(d.totalConsumption()).isEqualByComparingTo("100");
+        assertThat(d.totalConsumption()).isEqualByComparingTo("0.1");
         assertThat(d.totalProduction()).isEqualByComparingTo("40");
         assertThat(d.averagePrice()).isEqualByComparingTo("0.15");
     }
 
     @Test
-    void calculatePeakHours_returnsTopNByConsumptionMinusProductionDescending() {
+    void calculatePeakHours_returnsTopNByConsumptionDescending() {
         List<ElectricityDto> data = List.of(
-            dto("2023-10-12T00:00:00", "100", "10", "0"),
-            dto("2023-10-12T01:00:00", "300", "10", "0"),
-            dto("2023-10-12T02:00:00", "200", "10", "0")
+            dto("2023-10-12T00:00:00", "100", "0.01", "0"), // 100/1000 = 0.1
+            dto("2023-10-12T01:00:00", "300", "0.01", "0"), // 300/1000 = 0.3
+            dto("2023-10-12T02:00:00", "200", "0.01", "0")  // 200/1000 = 0.2
         );
 
         List<DayDetail.PeakHour> peaks = service.calculatePeakHours(data);
 
         assertThat(peaks).hasSize(TOP_MOST_COUNT);
-        assertThat(peaks.get(0).consumptionMinusProduction()).isEqualByComparingTo("290");
+        assertThat(peaks.get(0).consumption()).isEqualByComparingTo("0.3");
         assertThat(peaks.get(0).hour()).isEqualTo("01:00");
-        assertThat(peaks.get(1).consumptionMinusProduction()).isEqualByComparingTo("190");
+        assertThat(peaks.get(1).consumption()).isEqualByComparingTo("0.2");
         assertThat(peaks.get(1).hour()).isEqualTo("02:00");
     }
 
     @Test
     void calculatePeakHours_skipsRowsWithNullConsumptionOrProduction() {
         List<ElectricityDto> data = List.of(
-            dto("2023-10-12T00:00:00", null, "10", "0"),
+            dto("2023-10-12T00:00:00", null, "0.01", "0"),
             dto("2023-10-12T01:00:00", "200", null, "0"),
-            dto("2023-10-12T02:00:00", "300", "50", "0")
+            dto("2023-10-12T02:00:00", "300", "0.05", "0") // 300/1000 = 0.3
         );
 
         List<DayDetail.PeakHour> peaks = service.calculatePeakHours(data);
 
         assertThat(peaks).hasSize(TOP_MOST_COUNT - 1); // null values should not be included into top list
         assertThat(peaks.getFirst().hour()).isEqualTo("02:00");
-        assertThat(peaks.getFirst().consumptionMinusProduction()).isEqualByComparingTo("250");
+        assertThat(peaks.getFirst().consumption()).isEqualByComparingTo("0.3");
     }
 
     @Test
@@ -231,8 +233,102 @@ public class ElectricityServiceTest {
                 toLocalDate("2023-10-12T01:00:00"),
                 toLocalDate("2023-10-12T02:00:00"));
 
-        assertThat(measures.get(0).consumption()).isNull();
+        assertThat(measures.get(0).consumption()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(measures.get(0).price()).isNull();
         assertThat(measures.get(1).production()).isNull();
+        assertThat(measures.get(2).consumption()).isEqualByComparingTo("0.3");
+    }
+
+    @Test
+    void longestNegativePeriod_singleRunInMiddle() {
+        List<ElectricityDto> data = List.of(
+            dto("2023-10-12T00:00:00", "1", "1", "0.10"),
+            dto("2023-10-12T01:00:00", "1", "1", "-0.10"), // start
+            dto("2023-10-12T02:00:00", "1", "1", "-0.20"), // end
+            dto("2023-10-12T03:00:00", "1", "1", "0.05"),
+            dto("2023-10-12T04:00:00", "1", "1", "0.10")
+        );
+
+        DayDetail.NegativePeriod period = service.calculateLongestNegativePeriod(data);
+
+        assertThat(period).isNotNull();
+        assertThat(period.start()).isEqualTo(toLocalDate("2023-10-12T01:00:00"));
+        assertThat(period.end()).isEqualTo(toLocalDate("2023-10-12T03:00:00"));
+        assertThat(period.duration()).isEqualTo(Duration.ofHours(2));
+    }
+
+    @Test
+    void longestNegativePeriod_multipleRuns_picksLongest() {
+        List<ElectricityDto> data = List.of(
+            dto("2023-10-12T00:00:00", "1", "1", "-0.10"),
+            dto("2023-10-12T01:00:00", "1", "1", "0.10"),
+            dto("2023-10-12T02:00:00", "1", "1", "-0.10"), // start
+            dto("2023-10-12T03:00:00", "1", "1", "-0.10"),
+            dto("2023-10-12T04:00:00", "1", "1", "-0.10"), // end
+            dto("2023-10-12T05:00:00", "1", "1", "0.10")
+        );
+
+        DayDetail.NegativePeriod period = service.calculateLongestNegativePeriod(data);
+
+        assertThat(period.start()).isEqualTo(toLocalDate("2023-10-12T02:00:00"));
+        assertThat(period.end()).isEqualTo(toLocalDate("2023-10-12T05:00:00"));
+        assertThat(period.duration()).isEqualTo(Duration.ofHours(3));
+    }
+
+    @Test
+    void longestNegativePeriod_runReachesEndOfDay_endsAtLastHourPlusOne() {
+        List<ElectricityDto> data = List.of(
+            dto("2023-10-12T22:00:00", "1", "1", "0.10"),
+            dto("2023-10-12T23:00:00", "1", "1", "-0.10") // trailing run
+        );
+
+        DayDetail.NegativePeriod period = service.calculateLongestNegativePeriod(data);
+
+        assertThat(period.start()).isEqualTo(toLocalDate("2023-10-12T23:00:00"));
+        assertThat(period.end()).isEqualTo(toLocalDate("2023-10-13T00:00:00"));
+        assertThat(period.duration()).isEqualTo(Duration.ofHours(1));
+    }
+
+    @Test
+    void longestNegativePeriod_nullPriceInterruptsRun() {
+        List<ElectricityDto> data = List.of(
+            dto("2023-10-12T00:00:00", "1", "1", "-0.10"),
+            dto("2023-10-12T01:00:00", "1", "1", null),
+            dto("2023-10-12T02:00:00", "1", "1", "-0.10"), // start
+            dto("2023-10-12T03:00:00", "1", "1", "-0.10"), // end
+            dto("2023-10-12T04:00:00", "1", "1", "0.10")
+        );
+
+        DayDetail.NegativePeriod period = service.calculateLongestNegativePeriod(data);
+
+        assertThat(period.start()).isEqualTo(toLocalDate("2023-10-12T02:00:00"));
+        assertThat(period.end()).isEqualTo(toLocalDate("2023-10-12T04:00:00"));
+        assertThat(period.duration()).isEqualTo(Duration.ofHours(2));
+    }
+
+    @Test
+    void longestNegativePeriod_zeroIsNotNegative_returnsNull() {
+        List<ElectricityDto> data = List.of(
+            dto("2023-10-12T00:00:00", "1", "1", "0.00"),
+            dto("2023-10-12T01:00:00", "1", "1", "0.10"),
+            dto("2023-10-12T02:00:00", "1", "1", "0.50")
+        );
+
+        assertThat(service.calculateLongestNegativePeriod(data)).isNull();
+    }
+
+    @Test
+    void toMwhScale_dividesByScaleMultiplier() {
+        assertThat(service.toMwhScale(new BigDecimal("2500"))).isEqualByComparingTo("2.5");
+    }
+
+    @Test
+    void toMwhScale_roundsToFourDecimals() {
+        assertThat(service.toMwhScale(new BigDecimal("1"))).isEqualByComparingTo("0.001");
+    }
+
+    @Test
+    void toMwhScale_null_returnsZero() {
+        assertThat(service.toMwhScale(null)).isEqualByComparingTo("0");
     }
 }

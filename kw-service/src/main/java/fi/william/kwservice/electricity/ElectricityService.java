@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -42,7 +45,7 @@ public class ElectricityService {
     }
 
     DayDetail calculateDayDetail(LocalDate date, List<ElectricityDto> data) {
-        BigDecimal totalConsumption = detailsUtil.sumNonNull(data.stream().map(ElectricityDto::consumptionAmount).toList());
+        BigDecimal totalConsumption = toMwhScale(detailsUtil.sumNonNull(data.stream().map(ElectricityDto::consumptionAmount).toList()));
         BigDecimal totalProduction = detailsUtil.sumNonNull(data.stream().map(ElectricityDto::productionAmount).toList());
         BigDecimal averagePrice = detailsUtil.avgNonNull(data.stream().map(ElectricityDto::hourlyPrice).toList());
         log.debug("Calculated totalConsumption: {}, totalProduction: {}, averagePrice: {} for day: {}",
@@ -58,6 +61,9 @@ public class ElectricityService {
         List<DayDetail.HourPrice> cheapestHours = calculateCheapestHours(data);
         log.debug("Calculated cheapest hours: {}", cheapestHours);
 
+        DayDetail.NegativePeriod negativePeriod = calculateLongestNegativePeriod(data);
+        log.debug("Calculated longest negative period: {}", negativePeriod);
+
         List<DayDetail.Measure> measures = createMeasures(data);
 
         return new DayDetail(
@@ -65,6 +71,7 @@ public class ElectricityService {
             totalConsumption,
             totalProduction,
             averagePrice,
+            negativePeriod,
             peakHours,
             cheapestHours,
             measures
@@ -76,9 +83,9 @@ public class ElectricityService {
             .filter(measure -> measure.consumptionAmount() != null && measure.productionAmount() != null)
             .map(measure -> new DayDetail.PeakHour(
                 detailsUtil.toHourFormat(measure.startTime()),
-                measure.consumptionAmount().subtract(measure.productionAmount())
+                toMwhScale(measure.consumptionAmount())
             ))
-            .sorted(Comparator.comparing(DayDetail.PeakHour::consumptionMinusProduction).reversed())
+            .sorted(Comparator.comparing(DayDetail.PeakHour::consumption).reversed())
             .limit(dayDetailProperties.peakHoursCount())
             .toList();
     }
@@ -97,16 +104,75 @@ public class ElectricityService {
             .toList();
     }
 
+    /**
+     * Calculates the longest continuous period of negative electricity prices from the provided data.
+     *
+     * @param data list should be ordered by the dto startTime
+     */
+    DayDetail.NegativePeriod calculateLongestNegativePeriod(List<ElectricityDto> data) {
+        List<ElectricityDto> sortedData = data.stream()
+            .sorted(Comparator.comparing(ElectricityDto::startTime))
+            .toList();
+
+        LocalDateTime currentStart = null;
+        LocalDateTime longestStart = null;
+        LocalDateTime longestEnd = null;
+        Duration longestDuration = Duration.ZERO;
+
+        for (ElectricityDto ed : sortedData) {
+            BigDecimal price = ed.hourlyPrice();
+            boolean negative = price != null && price.signum() < 0;
+
+            if (negative) {
+                if (currentStart == null) currentStart = ed.startTime();
+            } else if (currentStart != null) {
+                LocalDateTime currentEnd = ed.startTime();
+                Duration duration = Duration.between(currentStart, currentEnd);
+
+                if (duration.compareTo(longestDuration) > 0) {
+                    longestDuration = duration;
+                    longestStart = currentStart;
+                    longestEnd = currentEnd;
+                }
+
+                currentStart = null;
+            }
+        }
+
+        if (currentStart != null) {
+            LocalDateTime currentEnd = sortedData.getLast().startTime().plusHours(1);
+            Duration duration = Duration.between(currentStart, currentEnd);
+
+            if (duration.compareTo(longestDuration) > 0) {
+                longestDuration = duration;
+                longestStart = currentStart;
+                longestEnd = currentEnd;
+            }
+        }
+
+        if (longestStart == null) return null;
+
+        return new DayDetail.NegativePeriod(
+            longestStart,
+            longestEnd,
+            longestDuration
+        );
+    }
+
     List<DayDetail.Measure> createMeasures(List<ElectricityDto> data) {
         return data.stream()
             .sorted(Comparator.comparing(ElectricityDto::startTime))
             .map(measure -> new DayDetail.Measure(
                 measure.startTime(),
-                measure.consumptionAmount(),
+                toMwhScale(measure.consumptionAmount()),
                 measure.productionAmount(),
                 measure.hourlyPrice())
             )
             .toList();
+    }
+
+    BigDecimal toMwhScale(BigDecimal amount) {
+        return detailsUtil.nonNull(amount).divide(dayDetailProperties.scaleMultiplier(), 4, RoundingMode.HALF_UP);
     }
 
     LocalDate parseDay(String day) {
