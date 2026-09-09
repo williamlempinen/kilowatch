@@ -3,6 +3,8 @@ package fi.william.kwservice;
 import fi.william.kwservice.electricity.DayDetail;
 import fi.william.kwservice.electricity.ElectricityService;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -23,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Sql(scripts = {"/schema.sql", "/data.sql"})
 class KwServiceApplicationTests {
+    private static final Logger log = LoggerFactory.getLogger(KwServiceApplicationTests.class);
+
     @Autowired
     private ElectricityService service;
 
@@ -48,6 +52,12 @@ class KwServiceApplicationTests {
         assertThat(result.totalProduction()).isNull();
         assertThat(result.averagePrice()).isNull();
         assertThat(result.negativePeriod()).isNull();
+    }
+
+    @Test
+    void getDetails_on_null_consumption() {
+        DayDetail result = service.getElectricityDetailsByDay("2021-01-01");
+        log.info("Result: {}", result);
     }
 
     @Test
@@ -137,7 +147,7 @@ class KwServiceApplicationTests {
         DayDetail.Measure first = result.measures().getFirst();
 
         assertThat(first.startTime()).isEqualTo(LocalDateTime.of(2021, 1, 1, 0, 0));
-        assertThat(first.consumption()).isEqualByComparingTo("0");
+        assertThat(first.consumption()).isNull();
         assertThat(first.price()).isNull();
         assertThat(first.production()).isEqualByComparingTo("6890");
     }

@@ -68,6 +68,7 @@ public class ElectricityService {
         log.debug("Calculated longest negative period: {}", negativePeriod);
 
         List<DayDetail.Measure> measures = createMeasures(data);
+        log.debug("Measures: {}", measures);
 
         return new DayDetail(
             date,
@@ -175,7 +176,9 @@ public class ElectricityService {
     }
 
     BigDecimal toMwhScale(BigDecimal amount) {
-        return detailsUtil.nonNull(amount).divide(dayDetailProperties.scaleMultiplier(), 4, RoundingMode.HALF_UP);
+        return amount == null
+            ? null
+            : amount.divide(dayDetailProperties.scaleMultiplier(), 4, RoundingMode.HALF_UP);
     }
 
     LocalDate parseDay(String day) {

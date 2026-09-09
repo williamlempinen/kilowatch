@@ -69,9 +69,4 @@ public class ElectricityServiceTest {
     void toMwhScale_rounds_to_four_decimals() {
         assertThat(service.toMwhScale(new BigDecimal("1"))).isEqualByComparingTo("0.001");
     }
-
-    @Test
-    void toMwhScale_null_returns_zero() {
-        assertThat(service.toMwhScale(null)).isEqualByComparingTo("0");
-    }
 }
