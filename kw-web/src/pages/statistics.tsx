@@ -80,7 +80,7 @@ function Statistics() {
                     ) : (
                         <ErrorTypography message="error fetching data, please try again later" />
                     ))}
-                {isEmpty && <p>no data for {dayParam}</p>}
+                {isEmpty && <p className="text-xl">no data for {dayParam}</p>}
             </div>
             {dayParam && <DayPager {...pagerProps} />}
             {hasData && (

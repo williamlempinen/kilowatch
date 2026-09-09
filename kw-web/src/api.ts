@@ -80,7 +80,11 @@ async function apiFetch<T>(
         } catch {
             /* empty */
         }
-        throw new ApiError(body?.message ?? response.statusText, response.status, body)
+        throw new ApiError(
+            body?.message.toLocaleLowerCase() ?? response.statusText,
+            response.status,
+            body
+        )
     }
 
     return (await response.json()) as T
