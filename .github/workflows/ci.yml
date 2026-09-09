@@ -1,0 +1,63 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+# cancel superseded runs on the same ref (e.g. new pushes to a PR)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kw-service-ci:
+    name: kw-service build & test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: kw-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and test
+        run: ./mvnw -B verify
+
+  kw-web-ci:
+    name: kw-web lint, build & test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: kw-web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: kw-web/.nvmrc
+          cache: npm
+          cache-dependency-path: kw-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Type-check and build
+        run: npm run build
+
+      - name: Test
+        run: npm test -- run --passWithNoTests

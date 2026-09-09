@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '')
     return {
         plugins: [react(), tailwindcss()],
+        test: { environment: 'jsdom' },
         server: {
             base: '/statistics',
             port: 3333,

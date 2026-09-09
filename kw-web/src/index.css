@@ -18,12 +18,13 @@
 
 @layer base {
     html {
-        font-family: 'JetBrains Mono',
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        sans-serif;
+        font-family:
+            'JetBrains Mono',
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            'Segoe UI',
+            sans-serif;
         @apply scroll-smooth;
     }
 }
