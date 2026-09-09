@@ -13,7 +13,7 @@ class DetailsUtilTest {
     private final DetailsUtil util = new DetailsUtil();
 
     @Test
-    void sumNonNull_sumsValues() {
+    void sumNonNull_sums_values() {
         assertThat(util.sumNonNull(Arrays.asList(
             new BigDecimal("1"),
             new BigDecimal("2"),
@@ -23,7 +23,7 @@ class DetailsUtilTest {
     }
 
     @Test
-    void sumNonNull_skipsNulls() {
+    void sumNonNull_skips_nulls() {
         List<BigDecimal> values = Arrays.asList(
             new BigDecimal("1"),
             null,
@@ -33,19 +33,19 @@ class DetailsUtilTest {
     }
 
     @Test
-    void sumNonNull_emptyList_returnsZero() {
+    void sumNonNull_empty_list_returns_zero() {
         assertThat(util.sumNonNull(List.of()))
             .isEqualByComparingTo("0");
     }
 
     @Test
-    void sumNonNull_allNulls_returnsZero() {
+    void sumNonNull_all_nulls_returns_zero() {
         assertThat(util.sumNonNull(Arrays.asList(null, null)))
             .isEqualByComparingTo("0");
     }
 
     @Test
-    void sumNonNull_mixesNegativesAndPositives() {
+    void sumNonNull_mixes_negatives_and_positives() {
         assertThat(util.sumNonNull(Arrays.asList(
             new BigDecimal("-5"),
             new BigDecimal("3")
@@ -54,7 +54,7 @@ class DetailsUtilTest {
     }
 
     @Test
-    void avgNonNull_computesMean() {
+    void avgNonNull_computes_mean() {
         assertThat(util.avgNonNull(Arrays.asList(
             new BigDecimal("2"),
             new BigDecimal("4")
@@ -63,7 +63,7 @@ class DetailsUtilTest {
     }
 
     @Test
-    void avgNonNull_ignoresNullsInBothSumAndCount() {
+    void avgNonNull_ignores_nulls_in_both_sum_and_count() {
         List<BigDecimal> values = Arrays.asList(
             new BigDecimal("2"),
             null,
@@ -74,13 +74,13 @@ class DetailsUtilTest {
     }
 
     @Test
-    void avgNonNull_emptyList_returnsZero() {
+    void avgNonNull_empty_list_returns_zero() {
         assertThat(util.avgNonNull(List.of()))
             .isEqualByComparingTo("0");
     }
 
     @Test
-    void avgNonNull_allNulls_returnsZero() {
+    void avgNonNull_all_nulls_returns_zero() {
         assertThat(util.avgNonNull(Arrays.asList(
             null,
             null
@@ -89,9 +89,13 @@ class DetailsUtilTest {
     }
 
     @Test
-    void avgNonNull_nonTerminatingQuotient_doesNotThrowAndRounds() {
+    void avgNonNull_non_terminating_quotient_does_not_throw_and_rounds() {
         // 1 / 3 must not blow up with ArithmeticException (rounding must be applied)
-        List<BigDecimal> values = List.of(new BigDecimal("1"), new BigDecimal("0"), new BigDecimal("0"));
+        List<BigDecimal> values = Arrays.asList(
+            new BigDecimal("1"),
+            new BigDecimal("0"),
+            new BigDecimal("0")
+        );
         assertThatCode(() -> util.avgNonNull(values)).doesNotThrowAnyException();
         assertThat(util.avgNonNull(values))
             .isGreaterThan(new BigDecimal("0.33"))
