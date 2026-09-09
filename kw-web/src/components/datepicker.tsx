@@ -15,24 +15,22 @@ function ChartDatePicker({ disabled, selectedDate, onDateChange }: ChartDatePick
         <button
             type="button"
             disabled={disabled}
-            className="flex w-full items-center justify-center hover:underline hover:underline-offset-4"
+            className="flex w-full items-center justify-center"
         >
             {!selectedDate && <span className="text-md">select date</span>}
             {selectedDate && (
-                <span className="md:text-md text-sm">{toDayParam(selectedDate, true)}</span>
+                <span className="md:text-md text-xl">{toDayParam(selectedDate, true)}</span>
             )}
         </button>
     )
 
     return (
-        <div className="flex w-full flex-col">
-            <DatePicker
-                disabled={disabled}
-                selected={selectedDate}
-                onChange={(date: Date | null) => onDateChange(date)}
-                customInput={customInput}
-            />
-        </div>
+        <DatePicker
+            disabled={disabled}
+            selected={selectedDate}
+            onChange={(date: Date | null) => onDateChange(date)}
+            customInput={customInput}
+        />
     )
 }
 

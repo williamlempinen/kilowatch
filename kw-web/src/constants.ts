@@ -4,7 +4,7 @@ export const DURATION_5_MIN = 1000 * 60 * 5
 
 export const API_BASE = '/api'
 
-export const DEFAULT_DATE = new Date('2023-01-01T00:00:00')
+export const DEFAULT_DATE = new Date('2024-01-01T00:00:00')
 
 export const PRODUCTION_COLOR = '#0c7bf3'
 export const PRICE_COLOR = '#c8b800'

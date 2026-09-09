@@ -18,11 +18,9 @@ function Filters({
     onClearFilters
 }: FiltersProps) {
     return (
-        <div className="flex flex-col items-center justify-between gap-3 border-2 border-E1 p-2 sm:flex-row">
-            <div className="flex items-center gap-3 border-2 border-P1">
-                <ChartDatePicker selectedDate={selectedDate} onDateChange={onDateChange} />
-            </div>
-            <div className="flex flex-col gap-3 border-2 border-S1 sm:flex-row">
+        <div className="flex flex-col items-center justify-end gap-12 p-2 sm:flex-row">
+            <ChartDatePicker selectedDate={selectedDate} onDateChange={onDateChange} />
+            <div className="flex flex-col gap-3 sm:flex-row">
                 <button disabled={disableApply} onClick={onApplyFilters}>
                     apply
                 </button>

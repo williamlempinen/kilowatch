@@ -3,9 +3,9 @@ import { useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import Filters from '../features/chart/chart-filters.tsx'
 import { DEFAULT_DATE } from '../constants.ts'
-import { toDayParam } from '../utils.ts'
+import { toDayParam, parseDayParam } from '../utils.ts'
 import ElectricityChart from '../features/chart/chart.tsx'
-import { fetchDayDetail } from '../api.ts'
+import { ApiError, fetchDayDetail } from '../api.ts'
 import ElectricityDetails from '../features/chart/details.tsx'
 import DetailTable from '../features/table/table.tsx'
 import Loading from '../components/loading.tsx'
@@ -17,21 +17,22 @@ function Statistics() {
     const dayParam = searchParams.get('day')
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(
-        dayParam ? new Date(`${dayParam}T00:00:00`) : DEFAULT_DATE
+        parseDayParam(dayParam) ?? DEFAULT_DATE
     )
 
     const {
         data: dayDetail,
         isFetching,
-        isError
+        isError,
+        error
     } = useQuery({
         queryKey: ['day-details', dayParam],
-        queryFn: ({ signal }) => fetchDayDetail(dayParam ?? '', signal),
+        queryFn: ({ signal }) => fetchDayDetail(dayParam ?? toDayParam(DEFAULT_DATE), signal),
         enabled: !!dayParam
     })
 
     const shiftDay = (delta: number) => {
-        const base = dayParam ? new Date(`${dayParam}T00:00:00`) : (selectedDate ?? DEFAULT_DATE)
+        const base = parseDayParam(dayParam) ?? selectedDate ?? DEFAULT_DATE
         const nextDate = new Date(base)
         nextDate.setDate(nextDate.getDate() + delta)
 
@@ -59,7 +60,7 @@ function Statistics() {
     }
 
     return (
-        <div>
+        <>
             <Filters
                 disableApply={!selectedDate || toDayParam(selectedDate) === dayParam}
                 disableClear={!dayParam && !selectedDate}
@@ -69,11 +70,16 @@ function Statistics() {
                 onClearFilters={handleClearFilters}
             />
             <div>
-                {!dayParam && <p>select a date and click apply to load statistics</p>}
-                {isFetching && <Loading height="10rem" />}
-                {isError && (
-                    <ErrorTypography message="error fetching data, please try again later" />
+                {!dayParam && (
+                    <p className="text-2xl">select a date and click apply to load statistics</p>
                 )}
+                {isFetching && <Loading height="10rem" />}
+                {isError &&
+                    (error instanceof ApiError ? (
+                        <ErrorTypography message={error.message} />
+                    ) : (
+                        <ErrorTypography message="error fetching data, please try again later" />
+                    ))}
                 {isEmpty && <p>no data for {dayParam}</p>}
             </div>
             {dayParam && <DayPager {...pagerProps} />}
@@ -85,7 +91,7 @@ function Statistics() {
                     <DayPager {...pagerProps} />
                 </div>
             )}
-        </div>
+        </>
     )
 }
 

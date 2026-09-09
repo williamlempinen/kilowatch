@@ -1,8 +1,20 @@
 import { API_BASE } from './constants.ts'
 
-class ApiError extends Error {
-    constructor(message: string) {
+export interface ApiErrorBody {
+    timestamp: string
+    status: string
+    message: string
+}
+
+export class ApiError extends Error {
+    readonly status: number
+    readonly body: ApiErrorBody | null
+
+    constructor(message: string, status: number, body: ApiErrorBody | null = null) {
         super(message)
+        this.name = 'ApiError'
+        this.status = status
+        this.body = body
     }
 }
 
@@ -62,7 +74,13 @@ async function apiFetch<T>(
     })
 
     if (!response.ok) {
-        throw new ApiError(`Request to ${path} failed: ${response.status} ${response.statusText}`)
+        let body: ApiErrorBody | null = null
+        try {
+            body = await response.json()
+        } catch {
+            /* empty */
+        }
+        throw new ApiError(body?.message ?? response.statusText, response.status, body)
     }
 
     return (await response.json()) as T
