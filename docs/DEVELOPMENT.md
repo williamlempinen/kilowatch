@@ -46,7 +46,7 @@ The web project uses _Node_ with version of _v24.14.1_ (current lts). If you hav
 correct _Node_ version by running command `nvm install` in the directory where `.nvmrc` file is located.
 
 To setup environment variables for development, copy the `kw-web/.env.example` into new `.env` file and set the `VITE_API_URL` variable to the backend service URL.
-For example, if you are running the backend service locally, you can set it to `http://localhost:8888`.
+For example, if you are running the backend service locally, you can set it to `http://localhost:8888`. This step is not needed for docker setup.
 
 Running the `kw-web` can be accomplished with the command of `npm run dev` which starts the frontend with _dev build_.
 
