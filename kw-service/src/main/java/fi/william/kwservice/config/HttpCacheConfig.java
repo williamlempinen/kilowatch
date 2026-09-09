@@ -2,23 +2,29 @@ package fi.william.kwservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.WebContentInterceptor;
 
-/**
- * HTTP caching configuration.
- * <p>
- * Registers a {@link ShallowEtagHeaderFilter} that computes an {@code ETag} from the response
- * body and answers conditional requests carrying {@code If-None-Match} with a
- * {@code 304 Not Modified} (empty body). Combined with the {@code Cache-Control} headers set in
- * the controller, this reduces bandwidth when the browser HTTP cache or TanStack Query revalidates
- * previously fetched days.
- */
+import java.time.Duration;
+
 @Configuration
-public class HttpCacheConfig {
-
+public class HttpCacheConfig implements WebMvcConfigurer {
     @Bean
     public ShallowEtagHeaderFilter shallowEtagHeaderFilter() {
         return new ShallowEtagHeaderFilter();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        WebContentInterceptor interceptor = new WebContentInterceptor();
+        interceptor.addCacheMapping(
+            CacheControl.maxAge(Duration.ofHours(1)).cachePrivate(),
+            "/electricity", "/electricity/**"
+        );
+        registry.addInterceptor(interceptor);
     }
 }
 

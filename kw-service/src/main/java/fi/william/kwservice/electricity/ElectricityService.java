@@ -36,6 +36,9 @@ public class ElectricityService {
     @Transactional(readOnly = true)
     public DayDetail getElectricityDetailsByDay(String day) {
         LocalDate parsedDate = parseDay(day);
+        if (parsedDate.isAfter(LocalDate.now())) {
+            throw new InvalidDateException("Requested day is in the future: " + parsedDate);
+        }
         List<ElectricityDto> data = electricityRepository.findAllByDay(parsedDate);
         log.debug("Fetched {} electricity data entries for day: {}", data.size(), parsedDate);
 
@@ -107,7 +110,7 @@ public class ElectricityService {
     /**
      * Calculates the longest continuous period of negative electricity prices from the provided data.
      *
-     * @param data list should be ordered by the dto startTime
+     * @param data list should already be ordered by the dto's startTime
      */
     DayDetail.NegativePeriod calculateLongestNegativePeriod(List<ElectricityDto> data) {
         List<ElectricityDto> sortedData = data.stream()

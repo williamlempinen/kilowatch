@@ -4,6 +4,8 @@ import fi.william.kwservice.config.DayDetailProperties;
 import fi.william.kwservice.exception.InvalidDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.*;
 public class ElectricityServiceTest {
     private static final int TOP_MOST_COUNT = 2;
     private static final BigDecimal SCALE_MULTIPLIER = new BigDecimal("1000");
+    private final Logger log = LoggerFactory.getLogger(ElectricityServiceTest.class);
     private ElectricityRepository repository;
     private ElectricityService service;
 
@@ -102,7 +105,6 @@ public class ElectricityServiceTest {
             .isInstanceOf(InvalidDateException.class);
         verifyNoInteractions(repository);
     }
-
 
     @Test
     void getDetails_computesTotalsAndAverage() {
