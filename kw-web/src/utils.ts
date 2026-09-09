@@ -18,6 +18,10 @@ export function durationSlice(duration: string): number {
     return parseInt(duration.split('').slice(2, -1).join(''))
 }
 
+/**
+ * Returns the hour of a date object in format of HH:00
+ * @param date
+ */
 export function dateToHour(date: string): string {
     return new Date(date).getHours().toString().padStart(2, '0') + ':00'
 }

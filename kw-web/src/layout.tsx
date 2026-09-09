@@ -12,6 +12,7 @@ function Layout({ children }: PropsWithChildren) {
                 </div>
                 <main className="p-4">{children}</main>
             </div>
+            <footer className="my-4 flex items-center justify-start text-G3">github source</footer>
         </div>
     )
 }

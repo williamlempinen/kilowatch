@@ -2,6 +2,7 @@
 
 @theme {
     --color-BG: #f7f9fa; /* background */
+    --color-TXT: #0d1529; /* text */
     --color-P1: #0c7bf3; /* primary 1 */
     --color-P2: #00b6d9; /* primary 2 */
     --color-S1: #00c850; /* success */
@@ -10,8 +11,8 @@
     --color-G2: #f8f8f8; /* gray 2 */
     --color-G3: #7e8490; /* gray 3 */
     --color-W1: #ff6700; /* warning 1 */
-    --color-PRICE: #0c7bf3; /* PRICE */
-    --color-PROD: #c8b800; /* PRODUCTION */
+    --color-PROD: #0c7bf3; /* PRICE */
+    --color-PRICE: #c8b800; /* PRODUCTION */
     --color-CONS: #474447; /* CONSUMPTION */
 }
 
@@ -28,5 +29,9 @@
 }
 
 p {
-    color: #0d1529;
+    @apply text-TXT;
+}
+
+button {
+    @apply text-xl hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline;
 }

@@ -11,12 +11,13 @@ import {
     XAxis,
     YAxis
 } from 'recharts'
-import { CONSUMPTION_COLOR, PRICE_COLOR, PRODUCTION_COLOR } from '../../constants.ts'
+import { BG_COLOR, CONSUMPTION_COLOR, PRICE_COLOR, PRODUCTION_COLOR } from '../../constants.ts'
+import { dateToHour } from '../../utils.ts'
 
 function ChartTooltip({ active, payload, label }: TooltipContentProps) {
-    const consumption = payload[0]
-    const production = payload[1]
-    const price = payload[2]
+    const consumption = payload.find((data) => data.dataKey === 'consumption')
+    const production = payload.find((data) => data.dataKey === 'production')
+    const price = payload.find((data) => data.dataKey === 'price')
     const isVisible = active && payload != null
 
     return (
@@ -26,14 +27,15 @@ function ChartTooltip({ active, payload, label }: TooltipContentProps) {
                     <p className="self-center text-xl text-P1">{label}</p>
                     <p>
                         <span className="text-lg text-PRICE">price:</span>{' '}
-                        {parseFloat(price.value as string).toFixed(2)}
+                        {price?.value == null ? 'N/A' : Number(price.value).toFixed(2)}
                     </p>
                     <p>
                         <span className="text-lg text-CONS">consumption:</span>{' '}
-                        {parseFloat(consumption.value as string).toFixed(3)}
+                        {consumption?.value == null ? 'N/A' : consumption.value}
                     </p>
                     <p>
-                        <span className="text-lg text-PROD">production: </span> {production.value}
+                        <span className="text-lg text-PROD">production: </span>{' '}
+                        {production?.value == null ? 'N/A' : production.value}
                     </p>
                 </div>
             )}
@@ -46,12 +48,17 @@ export interface ElectricityChartProps {
 }
 
 function ElectricityChart({ data }: ElectricityChartProps) {
+    const formatted = data.map((measure) => ({
+        ...measure,
+        startTime: dateToHour(measure.startTime)
+    }))
+
     return (
         <div className="max-h-800 w-full max-w-400">
             <ResponsiveContainer width="100%" height={800}>
                 <ComposedChart
                     responsive
-                    data={data}
+                    data={formatted}
                     margin={{
                         top: 20,
                         right: 0,
@@ -59,8 +66,7 @@ function ElectricityChart({ data }: ElectricityChartProps) {
                         left: 0
                     }}
                 >
-                    {/* BG-color */}
-                    <CartesianGrid stroke="#f7f9fa" />
+                    <CartesianGrid stroke={BG_COLOR} />
                     <XAxis dataKey="startTime" />
                     <YAxis yAxisId="price" orientation="left" width="auto" stroke={PRICE_COLOR} />
                     <YAxis yAxisId="amount" orientation="right" width="auto" />

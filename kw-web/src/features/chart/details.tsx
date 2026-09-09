@@ -7,30 +7,33 @@ export interface ElectricityDetailsProps {
 
 function ElectricityDetails({ data }: ElectricityDetailsProps) {
     return (
-        <div className="mt-1 flex flex-col gap-3">
-            <h2 className="self-end text-2xl">{data.date}</h2>
-            <div className="flex gap-3">
+        <div className="my-2 flex flex-col gap-3 border-y-2 border-G3 p-2">
+            <div className="flex flex-col gap-6 sm:flex-row">
                 <div className="flex flex-col">
-                    <p>total consumption: {data.totalConsumption?.toFixed(3)}</p>
-                    <p>total production: {data.totalProduction}</p>
-                    <p>average price: {data.averagePrice}</p>
+                    {data.measures.length > 0 && (
+                        <>
+                            <p className="text-lg">total consumption: {data.totalConsumption}</p>
+                            <p className="text-lg">total production: {data.totalProduction}</p>
+                            <p className="text-lg">average price: {data.averagePrice}</p>
+                        </>
+                    )}
                 </div>
                 {data.negativePeriod && (
                     <div>
-                        <p>
+                        <p className="text-lg">
                             longest negative price period:{' '}
-                            {durationSlice(data.negativePeriod.duration)}
+                            {durationSlice(data.negativePeriod.duration)} hours
                         </p>
-                        <p>from: {dateToHour(data.negativePeriod.start)}</p>
-                        <p>to: {dateToHour(data.negativePeriod.end)}</p>
+                        <p className="text-lg">from: {dateToHour(data.negativePeriod.start)}</p>
+                        <p className="text-lg">to: {dateToHour(data.negativePeriod.end)}</p>
                     </div>
                 )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-12 sm:flex-row">
                 {data.peakConsumptions.length > 0 && (
-                    <>
-                        <p>peak consumptions:</p>
-                        <ul>
+                    <div className="flex flex-col">
+                        <p className="self-start text-lg">peak consumptions:</p>
+                        <ul className="pl-8">
                             {data.peakConsumptions.map((peak, idx) => (
                                 <li key={`${idx}-${peak.consumption}`}>
                                     <p>
@@ -39,12 +42,12 @@ function ElectricityDetails({ data }: ElectricityDetailsProps) {
                                 </li>
                             ))}
                         </ul>
-                    </>
+                    </div>
                 )}
                 {data.cheapestHours.length > 0 && (
-                    <>
-                        <p>cheapest hours:</p>
-                        <ul>
+                    <div className="flex flex-col">
+                        <p className="text-lg">cheapest hours:</p>
+                        <ul className="pl-8">
                             {data.cheapestHours.map((cheap, idx) => (
                                 <li key={`${idx}-${cheap.price}`}>
                                     <p>
@@ -53,10 +56,10 @@ function ElectricityDetails({ data }: ElectricityDetailsProps) {
                                 </li>
                             ))}
                         </ul>
-                    </>
+                    </div>
                 )}
             </div>
-            <p>measurements for the day: {data.measures.length}</p>
+            <p className="text-lg">measurements for the day: {data.measures.length}</p>
         </div>
     )
 }

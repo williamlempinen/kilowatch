@@ -23,18 +23,10 @@ function Filters({
                 <ChartDatePicker selectedDate={selectedDate} onDateChange={onDateChange} />
             </div>
             <div className="flex flex-col gap-3 border-2 border-S1 sm:flex-row">
-                <button
-                    className="hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
-                    disabled={disableApply}
-                    onClick={onApplyFilters}
-                >
+                <button disabled={disableApply} onClick={onApplyFilters}>
                     apply
                 </button>
-                <button
-                    className="hover:underline hover:underline-offset-4 disabled:text-G3 disabled:no-underline"
-                    disabled={disableClear}
-                    onClick={onClearFilters}
-                >
+                <button disabled={disableClear} onClick={onClearFilters}>
                     clear
                 </button>
             </div>
