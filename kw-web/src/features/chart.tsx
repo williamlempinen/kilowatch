@@ -1,4 +1,4 @@
-import type { Measure } from '../../api.ts'
+import type { Measure } from '../api.ts'
 import type { TooltipContentProps } from 'recharts'
 import {
     Bar,
@@ -11,8 +11,8 @@ import {
     XAxis,
     YAxis
 } from 'recharts'
-import { BG_COLOR, CONSUMPTION_COLOR, PRICE_COLOR, PRODUCTION_COLOR } from '../../constants.ts'
-import { dateToHour } from '../../utils.ts'
+import { BG_COLOR, CONSUMPTION_COLOR, PRICE_COLOR, PRODUCTION_COLOR } from '../constants.ts'
+import { dateToHour } from '../utils.ts'
 
 function ChartTooltip({ active, payload, label }: TooltipContentProps) {
     const consumption = payload.find((data) => data.dataKey === 'consumption')

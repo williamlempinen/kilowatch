@@ -1,7 +1,7 @@
-import type { Measure } from '../../api.ts'
+import type { Measure } from '../api.ts'
 import { useMemo, useState } from 'react'
 import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa'
-import { dateToHour } from '../../utils.ts'
+import { dateToHour } from '../utils.ts'
 
 export interface DetailTableProps {
     data: Measure[]

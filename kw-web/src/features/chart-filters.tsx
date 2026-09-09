@@ -1,4 +1,4 @@
-import ChartDatePicker from '../../components/datepicker.tsx'
+import ChartDatePicker from '../components/datepicker.tsx'
 
 export interface FiltersProps {
     disableApply: boolean

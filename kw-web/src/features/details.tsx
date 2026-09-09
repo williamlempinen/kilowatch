@@ -1,5 +1,5 @@
-import type { DayDetail } from '../../api.ts'
-import { dateToHour, durationSlice } from '../../utils.ts'
+import type { DayDetail } from '../api.ts'
+import { dateToHour, durationSlice } from '../utils.ts'
 
 export interface ElectricityDetailsProps {
     data: DayDetail
