@@ -1,6 +1,6 @@
 services:
   database:
-    container_name: kw-database
+    container_name: kw-e2e-database
     build:
       context: ./database/
       dockerfile: Dockerfile
@@ -8,11 +8,6 @@ services:
       POSTGRES_USER: academy
       POSTGRES_PASSWORD: academy
       POSTGRES_DB: electricity
-    ports:
-      - "5432:5432"
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-    restart: always
     healthcheck:
       test: "pg_isready -U academy -d electricity"
       interval: 5s
@@ -20,7 +15,7 @@ services:
       retries: 5
 
   service:
-    container_name: kw-service
+    container_name: kw-e2e-service
     build:
       context: ./kw-service/
       dockerfile: Dockerfile
@@ -30,8 +25,6 @@ services:
       DB_NAME: electricity
       DB_USER: academy
       DB_PASSWORD: academy
-    ports:
-      - "8888:8888"
     depends_on:
       database:
         condition: service_healthy
@@ -42,7 +35,7 @@ services:
       retries: 12
 
   web:
-    container_name: kw-web
+    container_name: kw-e2e-web
     build:
       context: ./kw-web/
       dockerfile: Dockerfile
@@ -51,6 +44,3 @@ services:
     depends_on:
       service:
         condition: service_healthy
-
-volumes:
-  dbdata:
