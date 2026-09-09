@@ -81,7 +81,7 @@ async function apiFetch<T>(
             /* empty */
         }
         throw new ApiError(
-            body?.message.toLocaleLowerCase() ?? response.statusText,
+            body?.message?.toLocaleLowerCase() ?? response.statusText,
             response.status,
             body
         )
